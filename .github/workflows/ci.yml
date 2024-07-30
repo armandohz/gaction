@@ -34,7 +34,7 @@ jobs:
               run: npm run build
 
             - name: Run tests
-              run: npm test-ci
+              run: npm run test-ci
 
             # Check
             - name: Upload test results
@@ -42,7 +42,7 @@ jobs:
               uses: actions/upload-artifact@v2
               with:
                 name: test-results
-                path: ./test-results
+                path: ./coverage
 
             - name: Deploy to production
               if: github.event_name == 'push' && github.ref == 'refs/heads/main'
