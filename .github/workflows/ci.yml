@@ -12,10 +12,10 @@ jobs:
         steps: 
             - uses: actions/checkout@v4.1.7
             
-            - name: ▶️ Start
+            - name: ✅ Start
               env:
                 JOB_STATUS: ${{ toJson(job).status }}
-              run: echo "${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }} is $JOB_STATUS"
+              run: echo "${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }} is ${{ env.JOB_STATUS }}"
 
             - name: ⚙️ Setup Node.js
               uses: actions/setup-node@v4
@@ -40,7 +40,7 @@ jobs:
                 name: test-results
                 path: ./coverage
 
-            - name: ✈️ Deploy to production
+            - name: 🚀 Deploy to production
               if: github.event_name == 'push' && github.ref == 'refs/heads/main'
               run: |
                 echo "Add your deployment script here"
