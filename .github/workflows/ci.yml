@@ -1,4 +1,4 @@
-name: First workflow
+name: CI workflow
 
 on: [push, pull_request]
   # push:
@@ -12,33 +12,35 @@ jobs:
         steps: 
             - uses: actions/checkout@v4.1.7
             
-            - name: Hello!
-              run: echo "Hello! from ${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }}"
+            - name: ▶️ Start
+              env:
+                JOB_STATUS: ${{ toJson(job).status }}
+              run: echo "${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }} is $JOB_STATUS"
 
-            - name: Setup Node.js
+            - name: ⚙️ Setup Node.js
               uses: actions/setup-node@v4
               with:
                 node-version: 18.x
                 cache: 'npm'
 
-            - name: Install dependencies
+            - name: 🧱 Install dependencies
               run: npm ci
 
-            - name: Build Angular app
+            - name: 📦 Build Angular app
               run: npm run build
 
-            - name: Run tests
+            - name: 🧐 Run tests
               run: npm run test-ci
 
             # Check
-            - name: Upload test results
+            - name: 📊 Upload test results
               if: always()
               uses: actions/upload-artifact@v4
               with:
                 name: test-results
                 path: ./coverage
 
-            - name: Deploy to production
+            - name: ✈️ Deploy to production
               if: github.event_name == 'push' && github.ref == 'refs/heads/main'
               run: |
                 echo "Add your deployment script here"
@@ -50,9 +52,3 @@ jobs:
             #      connection_string: ${{ secrets.DEV_BLOB_STORAGE_CONN_STRING }}
             #      overwrite: true
                   
-            - name: 😊 More and more
-              env:
-                JOB_CONTEXT: ${{ toJson(job) }}
-              run: |
-                echo "Job Context: $JOB_CONTEXT"
-                echo "Done!"
