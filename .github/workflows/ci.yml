@@ -15,7 +15,7 @@ jobs:
             - name: Hello!
               run: echo "Hello! from ${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }}"
 
-            - uses: actions/cache@v1
+            - uses: actions/cache@v4
               with:
                 path: ~/.package_cache
                 key: ${{ runner.os }}-package-${{ hashFiles('**/package.json') }}
@@ -23,7 +23,7 @@ jobs:
                   ${{ runner.os }}-package-
 
             - name: Setup Node.js
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
                 node-version: 18.x  # Change this to your desired Node.js version
 
@@ -39,7 +39,7 @@ jobs:
             # Check
             - name: Upload test results
               if: always()
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                 name: test-results
                 path: ./coverage
