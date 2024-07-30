@@ -1,10 +1,10 @@
 name: First workflow
 
-on: [push]
+on: [push, pull_request]
 
 jobs: 
     build:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-18
 
         steps: 
             - uses: actions/checkout@v4.1.7
@@ -12,6 +12,47 @@ jobs:
             - name: Hello!
               run: echo "Hello! from ${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }}"
 
+            - uses: actions/cache@v1
+              with:
+                path: ~/.package_cache
+                key: ${{ runner.os }}-package-${{ hashFiles('**/package.json') }}
+                restore-keys: |
+                  ${{ runner.os }}-package-
+
+            - name: Setup Node.js
+              uses: actions/setup-node@v2
+              with:
+                node-version: 18.x  # Change this to your desired Node.js version
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build Angular app
+              run: npm run build
+
+            - name: Run tests
+              run: npm test
+
+            # Check
+            - name: Upload test results
+              if: always()
+              uses: actions/upload-artifact@v2
+              with:
+                name: test-results
+                path: ./test-results
+
+            - name: Deploy to production
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: |
+                echo "Add your deployment script here"
+            # - name: Uploading to Azure storage...
+            #  uses: bacongobbler/azure-blob-storage-upload@main
+            #  with:
+            #      source_dir: 'dist'
+            #      container_name: '$web'
+            #      connection_string: ${{ secrets.DEV_BLOB_STORAGE_CONN_STRING }}
+            #      overwrite: true
+                  
             - name: 😊 More and more
               env:
                 JOB_CONTEXT: ${{ toJson(job) }}
