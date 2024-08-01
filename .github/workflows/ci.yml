@@ -15,7 +15,7 @@ jobs:
             - name: ✅ Start
               env:
                 JOB_STATUS: ${{ toJson(job).status }}
-              run: echo "${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }} is ${{ env.JOB_STATUS }}"
+              run: echo "${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }} in ${{ github.ref_name }} is ${{ env.JOB_STATUS }}"
 
             - name: ⚙️ Setup Node.js
               uses: actions/setup-node@v4
