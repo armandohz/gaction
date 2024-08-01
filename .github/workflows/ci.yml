@@ -1,6 +1,9 @@
-name: First workflow
+name: CI workflow
 
-on: [push]
+on: [push, pull_request]
+  # push:
+    # branches:
+      # - main  # You can specify the branch you want to trigger the workflow on
 
 jobs: 
     build:
@@ -9,12 +12,43 @@ jobs:
         steps: 
             - uses: actions/checkout@v4.1.7
             
-            - name: Hello!
-              run: echo "Hello! from ${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }}"
-
-            - name: 😊 More and more
+            - name: ✅ Start
               env:
-                JOB_CONTEXT: ${{ toJson(job) }}
+                JOB_STATUS: ${{ toJson(job).status }}
+              run: echo "${{ github.workflow }} triggered by the ${{ github.event_name }} done by ${{ github.actor }} in ${{ github.ref_name }} is ${{ env.JOB_STATUS }}"
+
+            - name: ⚙️ Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                node-version: 18.x
+                cache: 'npm'
+
+            - name: 🧱 Install dependencies
+              run: npm ci
+
+            - name: 📦 Build Angular app
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              run: npm run build
+
+            - name: 🧐 Run tests
+              run: npm run test-ci
+
+            # Check
+            - name: 📊 Upload test results
+              if: always()
+              uses: actions/upload-artifact@v4
+              with:
+                name: test-results
+                path: ./coverage
+
+            - name: 🚀 Deploy to production
+              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
               run: |
-                echo "Job Context: $JOB_CONTEXT"
-                echo "Done!"
+                echo "Add your deployment script here"
+            # - name: Uploading to Azure storage...
+            #  uses: bacongobbler/azure-blob-storage-upload@main
+            #  with:
+            #      source_dir: 'dist'
+            #      container_name: '$web'
+            #      connection_string: ${{ secrets.DEV_BLOB_STORAGE_CONN_STRING }}
+            #      overwrite: true
