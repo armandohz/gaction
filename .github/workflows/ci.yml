@@ -21,7 +21,14 @@ jobs:
               uses: actions/setup-node@v4
               with:
                 node-version: 18.x
-                cache: 'npm'
+                # cache: 'npm'
+
+            - uses: actions/cache@v4
+              with:
+                path: ~/.npm
+                key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+                restore-keys: |
+                  ${{ runner.os }}-node-
 
             - name: 🧱 Install dependencies
               run: make deps
@@ -30,20 +37,23 @@ jobs:
               run: make test-ci
 
             - name: 📊 Upload test results
-              if: always()
+              if: github.ref == 'refs/heads/master' # always()
               uses: actions/upload-artifact@v4
               with:
                 name: test-results
                 path: ./coverage
 
-            - name: 🚀 Deploy to production
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-              run: |
-                make deploy
-            # - name: Uploading to Azure storage...
-            #  uses: bacongobbler/azure-blob-storage-upload@main
-            #  with:
-            #      source_dir: 'dist'
-            #      container_name: '$web'
-            #      connection_string: ${{ secrets.DEV_BLOB_STORAGE_CONN_STRING }}
-            #      overwrite: true
+            - name: 📦 Build
+              if: github.ref == 'refs/heads/master'
+              run: make build
+        
+            - name: 🚀 Deploy to my EC2 instance
+              if: github.ref == 'refs/heads/master'
+              uses: easingthemes/ssh-deploy@v5.1.0
+              with:
+                SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+                SOURCE: "dist/gaction/browser/"
+                REMOTE_HOST: "54.176.250.151"
+                REMOTE_USER: "ubuntu"
+                TARGET: "/var/www/html/gaction/"
+
