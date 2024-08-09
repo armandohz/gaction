@@ -24,16 +24,11 @@ jobs:
                 cache: 'npm'
 
             - name: 🧱 Install dependencies
-              run: npm ci
-
-            - name: 📦 Build Angular app
-              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-              run: npm run build
+              run: make deps
 
             - name: 🧐 Run tests
-              run: npm run test-ci
+              run: make test-ci
 
-            # Check
             - name: 📊 Upload test results
               if: always()
               uses: actions/upload-artifact@v4
@@ -42,9 +37,9 @@ jobs:
                 path: ./coverage
 
             - name: 🚀 Deploy to production
-              if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
               run: |
-                echo "Add your deployment script here"
+                make deploy
             # - name: Uploading to Azure storage...
             #  uses: bacongobbler/azure-blob-storage-upload@main
             #  with:
