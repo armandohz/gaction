@@ -37,17 +37,18 @@ jobs:
               run: make test-ci
 
             - name: 📊 Upload test results
-              if: always()
+              if: github.ref == 'refs/heads/master' # always()
               uses: actions/upload-artifact@v4
               with:
                 name: test-results
                 path: ./coverage
 
             - name: NPM build Angular
+              if: github.ref == 'refs/heads/master'
               run: make build
         
             - name: 🚀 Deploy to my EC2 instance
-              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+              if: github.ref == 'refs/heads/master'
               uses: easingthemes/ssh-deploy@v5.1.0
               with:
                 SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
@@ -55,10 +56,3 @@ jobs:
                 REMOTE_HOST: "54.176.250.151"
                 REMOTE_USER: "ubuntu"
                 TARGET: "/var/www/html/gaction/"
-            # - name: Uploading to Azure storage...
-            #  uses: bacongobbler/azure-blob-storage-upload@main
-            #  with:
-            #      source_dir: 'dist'
-            #      container_name: '$web'
-            #      connection_string: ${{ secrets.DEV_BLOB_STORAGE_CONN_STRING }}
-            #      overwrite: true
