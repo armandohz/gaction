@@ -2,7 +2,8 @@
 # SHELL = /bin/sh
 
 deps:
-	@npm ci
+	@npm install
+# ci
 
 test-ci:
 	@npm run test-ci

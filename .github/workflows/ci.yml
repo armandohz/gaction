@@ -43,7 +43,7 @@ jobs:
                 name: test-results
                 path: ./coverage
 
-            - name: NPM build Angular
+            - name: 📦 Build
               if: github.ref == 'refs/heads/master'
               run: make build
         
