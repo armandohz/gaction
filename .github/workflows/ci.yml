@@ -44,10 +44,10 @@ jobs:
                 path: ./coverage
 
             - name: NPM build Angular
-              run: npm run build
+              run: make build
         
-            # if: github.event_name == 'push' && github.ref == 'refs/heads/master'
             - name: 🚀 Deploy to my EC2 instance
+              if: github.event_name == 'push' && github.ref == 'refs/heads/master'
               uses: easingthemes/ssh-deploy@v5.1.0
               with:
                 SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
