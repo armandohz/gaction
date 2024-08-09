@@ -1,0 +1,43 @@
+current-dir := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+SHELL = /bin/sh
+
+help: ## Prints this help.
+    @grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+#.PHONY: build # Ignore build directory
+build: npm/install start
+
+npm/install: ACTION=install
+npm/update: ACTION=update
+npm/require: ACTION=install $(module)
+npm npm/install npm/update npm/require:
+	@docker run --rm $(INTERACTIVE) --volume $(current-dir):/app --user $(id -u):$(id -g) \
+		node:18 npm $(ACTION) --loglevel=warn
+
+test:
+	docker exec codelytv_ddd_skeleton-mooc_backend npm test
+# docker exec codelytv_ddd_skeleton-backoffice_backend npm test
+
+# 🐳 Docker Compose
+start: CMD=up -d
+stop: CMD=stop
+destroy: CMD=down
+
+doco start stop destroy:
+	@docker-compose $(CMD)
+# start: ## start docker composer
+#  @docker-compose up -d
+
+clean-cache:
+	@rm -rf apps/*/*/var
+
+#save-the-world:
+#	@rm -rf node_modules
+
+deploy: build
+	@echo "🚀 Deploy!!!"
+
+lint:
+	@echo "🔦 Code linted\n" \
+	      "  --- Level supreme"
+

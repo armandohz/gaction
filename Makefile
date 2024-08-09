@@ -11,9 +11,6 @@ test-ci:
 build: 
 	@npm run build
 
-deploy: build
-	@echo "🚀 Deploy!!!"
-
 up-dev:
 	@ng serve
 
