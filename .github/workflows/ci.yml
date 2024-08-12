@@ -44,15 +44,15 @@ jobs:
                 path: ./coverage
 
             - name: 📦 Build
-              if: github.ref == 'refs/heads/master'
+              # if: github.ref == 'refs/heads/master'
               run: make build
         
             - name: 🚀 Deploy to my EC2 instance
-              if: github.ref == 'refs/heads/master'
+              # if: github.ref == 'refs/heads/master'
               uses: easingthemes/ssh-deploy@v5.1.0
               with:
                 SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
                 SOURCE: "dist/gaction/browser/"
-                REMOTE_HOST: "54.176.250.151"
+                REMOTE_HOST: "54.151.50.168"
                 REMOTE_USER: "ubuntu"
                 TARGET: "/var/www/html/gaction/"
